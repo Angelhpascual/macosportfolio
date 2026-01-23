@@ -20,28 +20,15 @@ const renderText = (text, className, baseWeight = 400) => {
 };
 
 const setupTextHover = (container, type) => {
-  console.log('=== SETUP DEBUG ===');
-  console.log('Container:', container);
-  console.log('Type:', type);
-
-  if (!container) {
-    console.log('❌ Container is null');
-    return;
-  }
+  if (!container) return;
 
   const letters = container.querySelectorAll('span');
-  console.log('Spans found:', letters.length);
-  console.log('Spans:', letters);
 
-  if (letters.length === 0) {
-    console.log('❌ No spans found');
-    return;
-  }
+  if (letters.length === 0) return;
 
   const { min, max, default: base } = FONT_WEIGHTS[type];
 
   const animateLetter = (letter, weight, duration = 0.25) => {
-    console.log(`🎨 Animating letter to weight: ${weight}`);
     return gsap.to(letter, {
       duration,
       ease: 'power2.out',
@@ -50,27 +37,31 @@ const setupTextHover = (container, type) => {
   };
 
   const handleMouseMove = e => {
-    console.log('🖱️ Mouse moved over:', type);
     const { left } = container.getBoundingClientRect();
     const mouseX = e.clientX - left;
-    console.log('Mouse X:', mouseX);
 
-    letters.forEach((letter, index) => {
+    letters.forEach(letter => {
       const { left: l, width: w } = letter.getBoundingClientRect();
       const distance = Math.abs(mouseX - (l - left + w / 2));
-      const intensity = Math.exp(-(distance ** 2) / 2000);
+      const intensity = Math.exp(-(distance ** 2) / 20000);
       const weight = min + (max - min) * intensity;
-
-      console.log(
-        `Letter ${index}: distance=${distance.toFixed(2)}, intensity=${intensity.toFixed(3)}, weight=${weight.toFixed(0)}`
-      );
 
       animateLetter(letter, weight);
     });
   };
+  const handleMouseLeave = () => {
+    letters.forEach(letter => {
+      animateLetter(letter, base, 0.3);
+    });
+  };
 
   container.addEventListener('mousemove', handleMouseMove);
-  console.log('✅ Event listener added to:', type);
+  container.addEventListener('mouseleave', handleMouseLeave);
+
+  return () => {
+    container.removeEventListener('mousemove', handleMouseMove);
+    container.removeEventListener('mouseleave', handleMouseLeave);
+  }; 
 };
 
 const Welcome = () => {
@@ -78,12 +69,13 @@ const Welcome = () => {
   const subtitleRef = useRef(null);
 
   useGSAP(() => {
-    console.log('🚀 useGSAP ejecutándose');
-    console.log('titleRef.current:', titleRef.current);
-    console.log('subtitleRef.current:', subtitleRef.current);
-
-    setupTextHover(titleRef.current, 'title');
-    setupTextHover(subtitleRef.current, 'subtitle');
+   const titleCleanup = setupTextHover(titleRef.current, 'title');
+   const subtitleCleanup = setupTextHover(subtitleRef.current, 'subtitle');
+   
+   return () => {
+     titleCleanup();
+     subtitleCleanup();
+   };
   }, [titleRef, subtitleRef]);
 
   return (
