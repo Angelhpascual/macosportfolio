@@ -1,0 +1,12 @@
+# Configuración de Cursor para formateo automático
+{
+  "formatter": {
+    "enabled": true,
+    "formatter": "prettier",
+    "formatOnSave": true
+  },
+  "linter": {
+    "enabled": true,
+    "linter": "eslint"
+  }
+}
