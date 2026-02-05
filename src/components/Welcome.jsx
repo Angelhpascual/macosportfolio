@@ -69,14 +69,16 @@ const Welcome = () => {
   const subtitleRef = useRef(null);
 
   useGSAP(() => {
+    if (!titleRef.current || !subtitleRef.current) return;
+
     const titleCleanup = setupTextHover(titleRef.current, 'title');
     const subtitleCleanup = setupTextHover(subtitleRef.current, 'subtitle');
 
     return () => {
-      titleCleanup();
-      subtitleCleanup();
+      titleCleanup?.();
+      subtitleCleanup?.();
     };
-  }, [titleRef, subtitleRef]);
+  }, []);
 
   return (
     <section id="welcome">
