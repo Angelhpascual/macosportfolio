@@ -11,9 +11,10 @@ const useWindowStore = create(
         const win = state.windows[windowKey];
         if (!win) return;
         win.isOpen = true;
-        win.zIndex = state.nextZIndex;
-        window.data = data ?? win.data;
-        state.nextZIndex++;
+        const baseZ = state.nextZIndex;
+        win.zIndex = windowKey === 'imgfile' ? baseZ + 50 : baseZ;
+        win.data = data ?? win.data;
+        state.nextZIndex = windowKey === 'imgfile' ? baseZ + 51 : baseZ + 1;
       }),
     closeWindow: windowKey =>
       set(state => {
