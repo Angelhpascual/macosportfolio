@@ -1,3 +1,4 @@
+import { WindowControls } from '#components';
 import WindowWrapper from '#hoc/WindowWrapper';
 import useWindowStore from '#store/window';
 
@@ -25,9 +26,9 @@ const Text = () => {
         ) : null}
         {Array.isArray(description) && description.length > 0 ? (
           <div className="space-y-3 leading-relaxed text-base text-gray-800">
-            {description.map((para, idx) => {
-              <p key={idx}>{para}</p>;
-            })}
+            {description.map((para, idx) => (
+              <p key={idx}>{para}</p>
+            ))}
           </div>
         ) : null}
       </div>
